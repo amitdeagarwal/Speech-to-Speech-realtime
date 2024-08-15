@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: speech-to-speech-app
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: speech-to-speech-app
+  template:
+    metadata:
+      labels:
+        app: speech-to-speech-app
+    spec:
+      containers:
+      - name: speech-to-speech-app
+        image: speech-to-speech-app:latest
+        ports:
+        - containerPort: 5000
+        env:
+        - name: TRANSLATION_SERVICE
+          value: "deepl"
+        - name: DEEPL_API_KEY
+          value: "your_deepl_key"
+        - name: GOOGLE_API_KEY
+          value: "your_google_key"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: speech-to-speech-app-service
+spec:
+  type: LoadBalancer
+  ports:
+  - port: 80
+    targetPort: 5000
+  selector:
+    app: speech-to-speech-app

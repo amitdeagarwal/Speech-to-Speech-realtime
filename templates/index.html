@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Speech-to-Speech Translation</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Real-Time Speech-to-Speech Translation</h1>
+        <button id="startButton">Start Listening</button>
+        <div id="textOutput">
+            <h2>Original Text:</h2>
+            <p id="originalText"></p>
+            <h2>Translated Text:</h2>
+            <p id="translatedText"></p>
+        </div>
+        <audio id="audioOutput" controls>
+            <source src="{{ url_for('static', filename='output.mp3') }}" type="audio/mpeg">
+            Your browser does not support the audio element.
+        </audio>
+    </div>
+    <script>
+        document.getElementById('startButton').onclick = function() {
+            console.log('Button clicked');  // Log to check if button is clicked
+            fetch('/transcribe', { method: 'POST' })
+                .then(response => {
+                    console.log('Response received');  // Log to check if response is received
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('Data:', data);  // Log the data received
+                    document.getElementById('originalText').innerText = data.text || 'No speech detected';
+                    document.getElementById('translatedText').innerText = data.translated_text || 'No translation available';
+                    document.getElementById('audioOutput').src = '/static/output.mp3?' + new Date().getTime();
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+        }
+    </script>
+</body>
+</html>
